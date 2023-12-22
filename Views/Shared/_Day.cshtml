@@ -1,0 +1,7 @@
+﻿@model Hospital.Models.ViewModels.Day.DayVM
+
+<div class="day @(Model.IsNotCurrentMonth ? "not-current-month" : null) @(Model.IsWeekendOrHoliday ? "weekend-or-holiday" : null) @(Model.IsToday ? "today" : null)">
+    <div class="date">
+        @Model.Date.Day.ToString("00")
+    </div>
+</div>

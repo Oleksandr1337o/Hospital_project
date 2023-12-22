@@ -1,0 +1,161 @@
+﻿@model Hospital.Models.ViewModels.CalendarVM
+
+<style>
+    body {
+        font: normal 15px Arial, sans-serif;
+        margin: 0;
+        padding: 50px;
+    }
+
+    .calendar {
+        border: 1px solid #000;
+    }
+
+        .calendar .header {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .calendar table {
+            width: 100%;
+        }
+
+            .calendar table tr {
+            }
+
+                .calendar table tr th, .calendar table tr td {
+                    font-weight: normal;
+                    text-align: center;
+                    vertical-align: top;
+                    padding: 10px;
+                    width: 14.25%;
+                }
+
+                .calendar table tr th {
+                    background: aquamarine;
+                }
+
+                .calendar table tr td {
+                    padding-top: 30px;
+                    height: 50px;
+                }
+
+                    .calendar table tr td .day {
+                    }
+
+                    .calendar table tr td .not-current-month {
+                        color: #ccc !important;
+                    }
+
+                    .calendar table tr td .weekend-or-holiday {
+                        color: #ff0000;
+                    }
+
+                    .calendar table tr td .today {
+                        color: #00cc00 !important;
+                    }
+
+                    .calendar table tr td .day .date {
+                        font-size: 20px;
+                    }
+
+    .time-dropdown {
+        border-radius: 8px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    #backButton, #confirmButton {
+        border-radius: 8px;
+        padding: 10px 20px;
+        margin: 0 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        font-weight: bold;
+        border: none;
+    }
+
+        #backButton:hover, #confirmButton:hover {
+            background-color: #d6d6d6;
+            color: #000;
+        }
+
+    #backButton {
+        background-color: #ff9999;
+        color: #fff;
+    }
+
+    #confirmButton {
+        background-color: #99ff99;
+        color: #fff;
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<form asp-action="Confirm" method="post">
+    <div class="calendar" id="calendar-container">
+    <div class="header">
+            <a asp-action="ChangeMonth" asp-route-direction="-1">&#9666;</a>
+            @Model.Date.ToString("MMMM yyyy", new System.Globalization.CultureInfo("en-US"))
+            <a asp-action="ChangeMonth" asp-route-direction="1">&#9656;</a>
+    </div>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Mon.</th>
+                    <th>Tue.</th>
+                    <th>Wed.</th>
+                    <th>Thu.</th>
+                    <th>Fri.</th>
+                    <th>Sat.</th>
+                    <th>Sun.</th>
+                </tr>
+                @for (int i = 0; i < Model.Days.GetLength(0); i++)
+                {
+                    <tr>
+                        @for (int j = 0; j < Model.Days.GetLength(1); j++)
+                        {
+                            <td>
+                                @if (!Model.Days[i, j].IsNotCurrentMonth)
+                                {
+                                    <div class="clickable-day">
+                                        @Html.Partial("_Day", Model.Days[i, j])
+                                        @if (!Model.Days[i, j].IsWeekendOrHoliday)
+                                        {
+                                            <div class="time-selection">
+                                                <select class="time-dropdown" name="SelectedTimes[@Model.Days[i, j].Date.ToString("yyyy-MM-dd")]">
+                                                    <option value="" selected>Select time:</option>
+                                                    <option value="9:30-9:45">9:30-9:45</option>
+                                                    <option value="10:00-10:15">10:00-10:15</option>
+                                                    <option value="10:30-10:45">10:30-10:45</option>
+                                                    <option value="11:00-11:15">11:00-11:15</option>
+                                                    <option value="11:30-11:45">11:30-11:45</option>
+                                                    <option value="12:00-12:15">12:00-12:15</option>
+                                                    <option value="12:30-12:45">12:30-12:45</option>
+                                                </select>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="disabled-day">
+                                        @Html.Partial("_Day", Model.Days[i, j])
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="button-container">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-danger mx-2">Back</a>
+            <button type="submit" id="confirmButton">Confirm</button>
+        </div>
+    </div>
+</form>
